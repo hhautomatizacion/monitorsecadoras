@@ -1,0 +1,6 @@
+Instalar 
+python-serial
+python-mysqldb
+setserial
+
+agregar usuario a grupo dialout
