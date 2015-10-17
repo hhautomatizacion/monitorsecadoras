@@ -11,7 +11,6 @@
 * Fotos
 
 * Capturas de pantalla
----
 ![DSC02231](/Fotos/DSC02231.JPG)
 ---
 ![DSC02232](/Fotos/DSC02232.JPG)
