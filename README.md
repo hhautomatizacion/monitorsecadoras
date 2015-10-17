@@ -21,7 +21,7 @@
 
 ## Autores
 * emmanuel156
-* pedrohh
+* pedrohermon
 
 ## Comentarios
 * Ninguno
