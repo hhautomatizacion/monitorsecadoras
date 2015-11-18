@@ -5,6 +5,7 @@ import datetime
 import sys
 import MySQLdb
 import ConfigParser
+from math import trunc
 
 class slave:
 	def __init__(self,numero,nombre,temp1,temp2,entrada1,entrada2,formula,display,version,habilitado,x1,y1,x2,y2,t1,t2,ultimallamada,ultimarespuesta,tiemporespuesta,tiemporespuestas):
@@ -44,21 +45,18 @@ def conectar():
 	alivedb=datetime.datetime.now()
 	iter=0
 	for row in rows:
-		iter=iter-0.1
-		ahora=ahora + datetime.timedelta(seconds=iter)
+		iter=iter+1
+		ahora=ahora - datetime.timedelta(seconds=iter)
 		esclavo[row[1]]=slave(int(row[1]),row[2],'0','0','0','0','0','',int(row[4]),int(row[5]),int(row[6]),int(row[8]),int(row[7]),int(row[9]),int(row[10]),int(row[11]),ahora,ahora,ahora,ahora)
 def dbping():
 	global db
 	global alivedb
-	sys.stdout.write('\0\033[1;32m')
-	sys.stdout.write('\0\033[7;1H')
-	printw(str(datetime.datetime.now()),19)
-	printw("Pinging")	
+	escribir(7,"Pinging")	
 	try:	
 		db.ping()
 		alivedb=datetime.datetime.now()
 	except MySQLdb.Error:
-		sys.stdout.write("mysqlerror")
+		escribir(8,"mysqlerror")
 
 
 def almacenar(secadora,temp1,temp2,formula,display,entrada1,entrada2,version):
@@ -67,14 +65,15 @@ def almacenar(secadora,temp1,temp2,formula,display,entrada1,entrada2,version):
 	global alivedb
 	try:
 		cursor.execute('insert into lecturas values (0,now(),' + secadora + ',' + temp1 + ',' + temp2 + ',' + formula + ',"' + display + '",' + entrada1 + ',' + entrada2 + ',' + version + ',0)')
-	except MySQLdb.Error:
-		sys.stdout.write("mysql error")
-	finally:
 		db.commit()
+	except MySQLdb.Error:
+		conectar()
+		escribir(9,"reconectando mysql")
+	finally:
 		alivedb=datetime.datetime.now()
 
 def interpolar(x,x1=268,x2=293,y1=88,y2=110):
-	return float(float(float(x)-float(x1))*float((float(y2)-float(y1))/(float(x2)-float(x1))))+float(y1)
+	return trunc(float(float(x)-float(x1))*float((float(y2)-float(y1))/(float(x2)-float(x1))))+float(y1)
 
 def borrar(secadora):
 	global esclavo
@@ -83,6 +82,13 @@ def borrar(secadora):
 	printw(esclavo[secadora].nombre)
 	printw('-',120)
 
+def escribir(renglon, texto):
+	sys.stdout.write('\0\033[' + str(renglon) + ';1H')
+	sys.stdout.write('\0\033[1;32m')
+	printw(str(datetime.datetime.now()),19)
+	sys.stdout.write('\0\033[1;37m')
+	sys.stdout.write('|' + texto)
+	sys.stdout.flush()	
 
 def imprimir(secadora,color='blanco'):
 	global esclavo
@@ -93,14 +99,13 @@ def imprimir(secadora,color='blanco'):
 		sys.stdout.write('\0\033[1;32m')
 	if color=='amarillo':
 		sys.stdout.write('\0\033[1;33m')
-
 	printw(esclavo[secadora].nombre)
 	printw(esclavo[secadora].temp1,10)
 	printw(esclavo[secadora].temp2,10)
 	printw(esclavo[secadora].entrada1)
 	printw(esclavo[secadora].entrada2)
 	printw(esclavo[secadora].formula)
-	printw(esclavo[secadora].display,20)
+	printw(esclavo[secadora].display,30)
 	printw(str(esclavo[secadora].version))
 	printw(str(esclavo[secadora].tiemporespuesta),17)
 	printw(str(esclavo[secadora].tiemporespuestas),17)
@@ -143,9 +148,7 @@ def obtenerformula(display):
 			f='0'
 	except e:
 		f='0'
-		#nada
 	finally:
-		# nada
 		return f
 
 def handle_data(data):
@@ -163,29 +166,10 @@ def handle_data(data):
 	if len(data)>0:
 		datos=datos+data
 		if len(datos)>1:
-			sys.stdout.write('\0\033[1;33m')
-			sys.stdout.write('\0\033[3;1H')
-			printw(str(datetime.datetime.now()),19)
-			printw(str(ord(datos[1])))
-			printw(str(len(datos)))
+			escribir(3,str(ord(datos[1])).center(7) + '|' + str(len(datos)).center(7))
 		if len(datos)>9:
-			sys.stdout.write('\0\033[1;36m')
-			sys.stdout.write('\0\033[5;1H')
-			printw(str(datetime.datetime.now()),19)
-			printw(str(ord(datos[0])))
-			printw(str(ord(datos[1])))
-			printw(str(ord(datos[2])))
-			printw(str(ord(datos[3])))
-			printw(str(ord(datos[4])))
-			printw(str(ord(datos[5])))
-			printw(str(ord(datos[6])))
-			printw(str(ord(datos[7])))
-			printw(str(ord(datos[8])))
-			printw(str(ord(datos[9])))
-
+			escribir(5,str(ord(datos[0])).center(7)+'|'+str(ord(datos[1])).center(7)+'|'+str(ord(datos[2])).center(7)+'|'+str(ord(datos[3])).center(7)+'|'+str(ord(datos[4])).center(7)+'|'+str(ord(datos[5])).center(7)+'|'+str(ord(datos[6])).center(7)+'|'+str(ord(datos[7])).center(7)+'|'+str(ord(datos[8])).center(7)+'|'+str(ord(datos[9])).center(7))
 		if len(datos)>96:
-			#sys.stdout.write('\0\033[25d')
-			#sys.stdout.write(datos)
 			datos=''
 		if len(datos)==96:
 			if ord(datos[94]) == lo(crc16(datos[:94])) and ord(datos[95]) == hi(crc16(datos[:94])) :			
@@ -223,35 +207,29 @@ def handle_data(data):
 					display=display.replace(chr(39),' ')
 					esclavo[secadora].display=display
 					version=str((ord(datos[92]) * 100) + ord(datos[93]))
+					esclavo[secadora].version=version
 					esclavo[secadora].tiemporespuesta=esclavo[secadora].ultimarespuesta-esclavo[secadora].ultimallamada
-
 					imprimir(secadora,'verde')
 					listaok.append(secadora)
-
 					almacenar(str(secadora),temp1,temp2,formula,display,entrada1,entrada2,version)
-
-			#else:
-				#sys.stdout.write('\0\033[3d')
-				#printw(str(ord(datos[1])))
-				#printw(' ')
-				#printw(str(ord(datos[94])))
-				#printw(str(lo(crc16(datos[:94]))))
-				#printw(' ')
-				#printw(str(ord(datos[95])))
-				#printw(str(hi(crc16(datos[:94]))))
-
-				#sys.stdout.write('\0\033[32d')
-				#printw(datos,90)
-
-
 			datos=''
+def escribir_en_puertos(cadena):
+	global puertos
+	for ser in puertos:
+		puertos[ser].write(cadena)
 
-def read_from_port(ser):
+def read_from_port():
+    global puertos
     while True:
-        reading = ser.readline()
-        handle_data(reading)
+	for ser in puertos:
+	        reading = puertos[ser].readline()
+        	handle_data(reading)
 
 esclavo={}
+puertos={}
+alertaverde=2
+alertaamarilla=20
+alertaroja=60
 
 cfg = ConfigParser.RawConfigParser()
 cfg.read('dryermon.ini')
@@ -261,10 +239,16 @@ except:
 	sServidor='localhost'
 
 conectar()
-ser=serial.Serial('/dev/ttyUSB0', 9600, timeout=0.1)
+i=0
+for i in range(0,9):
+	try:
+		sPuerto=cfg.get('ports','port'+str(i))
+		escribir(11,sPuerto)
+		puertos[i]=serial.Serial(sPuerto, 9600, timeout=0.1)
+	except:
+		escribir(10,str(i))
 
-
-thread = threading.Thread(target=read_from_port, args=(ser,))
+thread = threading.Thread(target=read_from_port)
 thread.start()
 
 i=0
@@ -279,49 +263,40 @@ while True:
 		dbping()
 	while len(listaok)>0:
 		i=listaok.pop()	
-		ser.write(chr(6)+chr(i)+chr(lo(crc16(chr(6)+chr(i))))+chr(hi(crc16(chr(6)+chr(i)))))
+		escribir_en_puertos(chr(6)+chr(i)+chr(lo(crc16(chr(6)+chr(i))))+chr(hi(crc16(chr(6)+chr(i)))))
 		time.sleep(0.1)
-	while len(listabad)>0:
-		i=listabad.pop()	
-		ser.write(chr(15)+chr(i)+chr(lo(crc16(chr(15)+chr(i))))+chr(hi(crc16(chr(15)+chr(i)))))
-		time.sleep(0.1)			
 	if len(lista)==0:
+		while len(listabad)>0:
+			i=listabad.pop()	
+			escribir_en_puertos(chr(15)+chr(i)+chr(lo(crc16(chr(15)+chr(i))))+chr(hi(crc16(chr(15)+chr(i)))))
+			time.sleep(0.1)			
+		ahora=datetime.datetime.now()
 		for i in esclavo:
-			if (ahora - esclavo[i].ultimarespuesta).seconds < 60:
-				if (ahora - esclavo[i].ultimarespuesta).seconds > 20:
+			if (ahora - esclavo[i].ultimarespuesta).seconds < alertaroja:
+				if (ahora - esclavo[i].ultimarespuesta).seconds > alertaamarilla:
 					lista.append(i)
-		while len(lista)==0:	
-			time.sleep(0.1)
-			ahora=datetime.datetime.now()
+		if len(lista)==0:
 			for i in esclavo:
-				if (ahora - esclavo[i].ultimarespuesta).seconds > 5:
-					lista.append(i)
+				lista.append(i)
 		lista.reverse()
 	datos=''
 	i=lista.pop()
-
-
-	sys.stdout.write('\0\033[1;32m')
-	sys.stdout.write('\0\033[1;1H')
-	printw(str(datetime.datetime.now()),19)
-	printw(str(i))
-
+	escribir(1,str(i).center(7))
 	esclavo[i].ultimallamada=datetime.datetime.now()
-	ser.write(chr(5)+chr(i)+chr(lo(crc16(chr(5)+chr(i))))+chr(hi(crc16(chr(5)+chr(i)))))
-	time.sleep(0.1)
+	escribir_en_puertos(chr(5)+chr(i)+chr(lo(crc16(chr(5)+chr(i))))+chr(hi(crc16(chr(5)+chr(i)))))
 
 	for i in esclavo:
-		if (ahora - esclavo[i].ultimarespuesta).seconds < 60:
-			if (ahora - esclavo[i].ultimarespuesta).seconds > 40:
+		if (ahora - esclavo[i].ultimarespuesta).seconds < alertaroja:
+			if (ahora - esclavo[i].ultimarespuesta).seconds > alertaamarilla:
 				esclavo[i].tiemporespuestas=datetime.datetime.now()-esclavo[i].ultimarespuesta
 				imprimir(i,'amarillo')
-			elif (ahora - esclavo[i].ultimarespuesta).seconds > 3:
-				#esclavo[i].tiemporespuestas=datetime.datetime.now()-esclavo[i].ultimarespuesta
+			elif (ahora - esclavo[i].ultimarespuesta).seconds > alertaverde:
 				imprimir(i)
-		if (ahora - esclavo[i].ultimarespuesta).seconds > 60:
-			listabad.append(i)
-			borrar(i)
+		if (ahora - esclavo[i].ultimarespuesta).seconds > alertaroja:
+			if i not in listabad:
+				listabad.append(i)
+				borrar(i)
 
 
-	time.sleep(0.3)
+	time.sleep(0.5)
 
