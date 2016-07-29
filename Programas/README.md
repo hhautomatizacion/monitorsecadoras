@@ -8,6 +8,10 @@
 
 ## Programas de Computadora, PLC, etc. 
 
-* Codigos fuente
+* Codigos fuente.
 
-* Iconos, imagenes y archivos de configuracion de los programas
+* Iconos e imagenes usados en los programas.
+
+* Archivos de configuracion de los programas.
+
+* Programas compilados.

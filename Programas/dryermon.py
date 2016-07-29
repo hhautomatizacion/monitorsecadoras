@@ -38,32 +38,41 @@ def conectar():
 	global esclavo
 	global alivedb
 	global sServidor
+	global totalesclavos
 	db = MySQLdb.connect(sServidor,'root','manttocl','dryermon')
 	cursor = db.cursor()
 	cursor.execute('SELECT * FROM esclavos WHERE habilitado=1 ORDER BY nombre')
 	rows=cursor.fetchall()
 	esclavo={}
-	ahora=datetime.datetime.now()
+	ahora=datetime.datetime.now() - datetime.timedelta(seconds=(alertaroja * 0.9))
 	alivedb=datetime.datetime.now()
-	iter=12
+	iter=0
 	for row in rows:
 		iter=iter+1
 		esclavo[row[1]]=slave(int(row[1]),row[2],iter,'0','0','0','0','0','',int(row[4]),int(row[5]),int(row[6]),int(row[8]),int(row[7]),int(row[9]),int(row[10]),int(row[11]),ahora,ahora,ahora,ahora)
+	totalesclavos=iter
+
 def dbping():
 	global db
 	global alivedb
-	escribir(7,"Pinging")	
+	respuestas.append(str(datetime.datetime.now())+' Ping')
 	try:	
 		db.ping()
 		alivedb=datetime.datetime.now()
 	except MySQLdb.Error:
-		escribir(8,"mysqlerror")
+		respuestas.append(str(datetime.datetime.now())+' MySQL error')
 
 def obtenerancho():
 	scralto=0
 	scrancho=0
 	(scralto,scrancho)=os.popen('stty size','r').read().split()
 	return scrancho
+
+def obteneralto():
+	scralto=0
+	scrancho=0
+	(scralto,scrancho)=os.popen('stty size','r').read().split()
+	return scralto
 
 
 def almacenar(secadora,temp1,temp2,formula,display,entrada1,entrada2,version):
@@ -75,7 +84,7 @@ def almacenar(secadora,temp1,temp2,formula,display,entrada1,entrada2,version):
 		db.commit()
 	except MySQLdb.Error:
 		conectar()
-		escribir(9,"reconectando mysql")
+		respuestas.append(str(datetime.datetime.now())+' MySQL conn')
 	finally:
 		alivedb=datetime.datetime.now()
 
@@ -90,10 +99,8 @@ def borrar(secadora):
 	printw(esclavo[secadora].nombre)
 	printw('-',width-9)
 
-def escribir(renglon, texto):
-	sys.stdout.write('\0\033[' + str(renglon) + ';1H')
-	sys.stdout.write('\0\033[1;32m')
-	printw(str(datetime.datetime.now()),19)
+def escribir(renglon, texto, columna=1):
+	sys.stdout.write('\0\033[' + str(renglon) + ';' + str(columna) + 'H')
 	sys.stdout.write('\0\033[1;37m')
 	sys.stdout.write('|' + texto)
 	sys.stdout.flush()	
@@ -101,7 +108,7 @@ def escribir(renglon, texto):
 def imprimir(secadora,color='blanco'):
 	global esclavo
 	width=int(obtenerancho())
-	if width >88:
+	if width >87:
 		sys.stdout.write('\0\033[' + str(esclavo[secadora].renglon) + ';1H')
 		if color=='blanco':
 			sys.stdout.write('\0\033[1;37m')
@@ -115,7 +122,7 @@ def imprimir(secadora,color='blanco'):
 		printw(esclavo[secadora].entrada1,3)
 		printw(esclavo[secadora].entrada2,3)
 		printw(esclavo[secadora].formula)
-		printw(esclavo[secadora].display,width-88)
+		printw(esclavo[secadora].display,width-87)
 		printw(str(esclavo[secadora].version))
 		printw(str(esclavo[secadora].tiemporespuesta),17)
 		printw(str(esclavo[secadora].tiemporespuestas),17)
@@ -166,6 +173,8 @@ def handle_data(data):
 	global datos
 	global esclavo
 	global respuestas
+	global datosrespuestas
+
 	secadora=''
 	temp1=''
 	temp2=''
@@ -178,9 +187,7 @@ def handle_data(data):
 	if len(data)>0:
 		datos=datos+data
 		if len(data)>1:
-			respuestas.append(str(datetime.datetime.now())+' |'+str(ord(data[1])).center(7)+'|'+str(len(data)).center(7))
-		#if len(datos)>9:
-		#	escribir(5,str(ord(datos[0])).center(7)+'|'+str(ord(datos[1])).center(7)+'|'+str(ord(datos[2])).center(7)+'|'+str(ord(datos[3])).center(7)+'|'+str(ord(datos[4])).center(7)+'|'+str(ord(datos[5])).center(7)+'|'+str(ord(datos[6])).center(7)+'|'+str(ord(datos[7])).center(7)+'|'+str(ord(datos[8])).center(7)+'|'+str(ord(datos[9])).center(7))
+			respuestas.append(str(datetime.datetime.now())+' '+str(ord(data[1])).center(7) + str(len(data)).center(7))
 		if len(datos)>96:
 			datos=''
 		if len(datos)==96:
@@ -190,12 +197,21 @@ def handle_data(data):
 					if secadora in esclavo:
 						esclavo[secadora].tiemporespuestas=datetime.datetime.now()-esclavo[secadora].ultimarespuesta
 						esclavo[secadora].ultimarespuesta=datetime.datetime.now()				
-						if esclavo[secadora].x1 <> 0 or esclavo[secadora].y1 <> 0 or esclavo[secadora].x2 <> 0 or esclavo[secadora].y2 <> 0 : 
-							temp1=str(interpolar(ord(datos[2])*256+ord(datos[3]),esclavo[secadora].x1,esclavo[secadora].x2,esclavo[secadora].y1,esclavo[secadora].y2))
-							temp2=str(interpolar(ord(datos[4])*256+ord(datos[5]),esclavo[secadora].x1,esclavo[secadora].x2,esclavo[secadora].y1,esclavo[secadora].y2))
+						if esclavo[secadora].t1 == 0:
+							temp1='0'
 						else:
-							temp1=str((ord(datos[2])*256+ord(datos[3])))
-							temp2=str((ord(datos[4])*256+ord(datos[5])))
+							if esclavo[secadora].x1 <> 0 or esclavo[secadora].y1 <> 0 or esclavo[secadora].x2 <> 0 or esclavo[secadora].y2 <> 0 : 
+								temp1=str(interpolar(ord(datos[2])*256+ord(datos[3]),esclavo[secadora].x1,esclavo[secadora].x2,esclavo[secadora].y1,esclavo[secadora].y2))
+							else:
+								temp1=str((ord(datos[2])*256+ord(datos[3])))
+						if esclavo[secadora].t2 == 0:
+							temp2='0'
+						else:
+							if esclavo[secadora].x1 <> 0 or esclavo[secadora].y1 <> 0 or esclavo[secadora].x2 <> 0 or esclavo[secadora].y2 <> 0 : 
+								temp2=str(interpolar(ord(datos[4])*256+ord(datos[5]),esclavo[secadora].x1,esclavo[secadora].x2,esclavo[secadora].y1,esclavo[secadora].y2))
+							else:
+								temp2=str((ord(datos[4])*256+ord(datos[5])))
+
 						esclavo[secadora].temp1=temp1
 						esclavo[secadora].temp2=temp2
 						entrada1=str(ord(datos[6]))
@@ -219,27 +235,40 @@ def handle_data(data):
 						version=str((ord(datos[92]) * 100) + ord(datos[93]))
 						esclavo[secadora].version=version
 						esclavo[secadora].tiemporespuesta=esclavo[secadora].ultimarespuesta-esclavo[secadora].ultimallamada
-						#imprimir(secadora,'verde')
 						listaok.append(secadora)
+						datosrespuestas.append(str(datetime.datetime.now()) + esclavo[secadora].nombre.center(7) + temp1.center(7) + temp2.center(7) + display)
 						almacenar(str(secadora),temp1,temp2,formula,display,entrada1,entrada2,version)
 			except:
-				respuestas.append(str(datetime.datetime.now())+' | ErrorRecepcion')
+				respuestas.append(str(datetime.datetime.now())+' ErrorRecepcion')
 				
 			datos=''
 
 def refresco_pantalla():
 	global esclavollamada
+	global totalesclavos
 	r=''
 	while True:
-		time.sleep(0.1)
-		i=0
-		#escribir(1,str(esclavollamada).center(7))
-		while len(respuestas) >= 12:
-			r=respuestas.pop(0)
-		for x in respuestas:
-			i=i+1
-			if i<12:
-				escribir(i,x)
+		width=int(obtenerancho())
+		height=int(obteneralto())
+		maxlista=height - totalesclavos
+		if maxlista > 1:
+			escribir (totalesclavos + 1, '-'*(width-1))
+			time.sleep(0.1)
+			while len(datosrespuestas) > maxlista:
+				datosrespuestas.pop(0)	
+			while len(respuestas) > maxlista:
+				respuestas.pop(0)
+			i=1
+			for x in respuestas:
+				i=i+1
+				if i <= maxlista:
+					escribir(i + totalesclavos,x)
+			i=1
+			for x in datosrespuestas:
+				i=i+1
+				if i <= maxlista:
+					if width > 43:
+						escribir(i + totalesclavos,x[:width-43],43)				
 		for i in esclavo:
 			ahora=datetime.datetime.now()
 			if int((ahora - esclavo[i].ultimarespuesta).seconds) < alertaverde:
@@ -267,7 +296,7 @@ def read_from_port():
     global puertos
     while True:
 	for ser in puertos:
-	        reading = puertos[ser].readline()
+	        reading = puertos[ser].read(96)
         	handle_data(reading)
 
 def getsetting(sSeccion,sClave,sDefault=''):
@@ -289,8 +318,10 @@ splashscreen()
 i=0
 datos=''
 esclavollamada=0
+totalesclavos=0
 ahora=datetime.datetime.now()
 respuestas=[]
+datosrespuestas=[]
 lista=[]
 listaok=[]
 listabad=[]
@@ -310,9 +341,8 @@ for i in range(0,10):
 	try:
 		sPuerto=getsetting('ports','port'+str(i),'')
 		if len(sPuerto):
-			#escribir(11,sPuerto)
 			puertos[i]=serial.Serial(sPuerto, 9600, timeout=0.1)
-			respuestas.append(str(datetime.datetime.now()) + ' |' + sPuerto)
+			respuestas.append(str(datetime.datetime.now()) + ' ' + sPuerto)
 			
 	except:
 		escribir(10,str(i))
@@ -329,7 +359,7 @@ while True:
 	if (ahora - alivedb).seconds > 3600:
 		dbping()
 	if len(lista)==0:
-		respuestas.append(str(datetime.datetime.now()) + ' |' + 15*'-')
+		respuestas.append(str(datetime.datetime.now()) + ' ' + 13*'-')
 		if len(listaok)>0:
 			while len(listaok)>0:
 				i=listaok.pop()	
@@ -355,10 +385,8 @@ while True:
 
 	datos=''
 	i=lista.pop()
-	respuestas.append(str(datetime.datetime.now())+' |'+str(i).center(15))
+	respuestas.append(str(datetime.datetime.now())+' '+str(i).center(13))
 	esclavollamada=i
-	#escribir(1,str(i).center(7))
-	
 	esclavo[i].ultimallamada=datetime.datetime.now()
 	escribir_en_puertos(chr(5)+chr(i)+chr(lo(crc16(chr(5)+chr(i))))+chr(hi(crc16(chr(5)+chr(i)))))
 	time.sleep(pausallamadas)
