@@ -13,7 +13,7 @@
 * Programa que se comunica con las tarjetas esclavo para obtener los datos y guardarlos en un servidor de base de datos.
 
 ## Herramientas utilizadas
-* Python 3
+* Python 2.7
 * MySQL 5.5
 
 ## Modelos de PLC, etc.
@@ -119,4 +119,6 @@
 ![MOV02397.jpg](/Fotos/MOV02397.jpg)
 ---
 ![MOV02398.jpg](/Fotos/MOV02398.jpg)
+---
+![dryermon.jpg](/Programas/dryermon.jpg)
 ---
