@@ -45,7 +45,7 @@ def conectar():
 	cursor.execute('SELECT * FROM esclavos WHERE habilitado=1 ORDER BY nombre')
 	rows=cursor.fetchall()
 	esclavo={}
-	ahora=datetime.datetime.now() - datetime.timedelta(seconds=(alertaroja * 0.9))
+	ahora=datetime.datetime.now() - datetime.timedelta(seconds=(alertaroja * 0.75))
 	alivedb=datetime.datetime.now()
 	iter=0
 	for row in rows:
@@ -225,7 +225,10 @@ def handle_data(data):
 							formula='0'
 						esclavo[secadora].formula=formula
 						display=datos[8:92]
+						display=display.replace(chr(0),' ')
 						display=filter(lambda x: x in string.letters + string.digits + string.punctuation + ' ',display)
+						display=display.replace(chr(34),' ')
+						display=display.replace(chr(39),' ')
 						esclavo[secadora].display=display
 						version=str((ord(datos[92]) * 100) + ord(datos[93]))
 						esclavo[secadora].version=version
@@ -350,7 +353,6 @@ for i in range(0,10):
 			
 	except:
 		time.sleep(1)
-		#escribir(10,str(i))
 
 thread = threading.Thread(target=read_from_port)
 thread.start()
