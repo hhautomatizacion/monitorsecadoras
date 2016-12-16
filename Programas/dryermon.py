@@ -57,12 +57,12 @@ def conectar():
 def dbping():
 	global db
 	global alivedb
-	datosrespuestas.append(str(datetime.datetime.now())+' Ping')
+	datosrespuestas.append('\0\033[1;34m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + '\0\033[1;33m' + ' Ping')
 	try:	
 		db.ping()
 		alivedb=datetime.datetime.now()
 	except MySQLdb.Error:
-		datosrespuestas.append(str(datetime.datetime.now())+' MySQL error')
+		datosrespuestas.append('\0\033[1;34m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + '\0\033[1;31m' + ' MySQL error')
 
 def almacenar(secadora,temp1,temp2,formula,display,entrada1,entrada2,version):
 	global cursor
@@ -73,7 +73,7 @@ def almacenar(secadora,temp1,temp2,formula,display,entrada1,entrada2,version):
 		db.commit()
 	except MySQLdb.Error:
 		conectar()
-		datosrespuestas.append(str(datetime.datetime.now())+' Error MySQL connection')
+		datosrespuestas.append('\0\033[1;31m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + '\0\033[1;31m' + ' Error MySQL connection')
 	finally:
 		alivedb=datetime.datetime.now()
 
@@ -176,7 +176,7 @@ def handle_data(data):
 	if len(data)>0:
 		datos=datos+data
 		if len(data)>1:
-			respuestas.append('\0\033[1;36m' + str(datetime.datetime.now())+ '\0\033[1;37m' + ' '+str(ord(data[1])).center(5) + str(len(data)).center(5))
+			respuestas.append('\0\033[1;36m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+ '\0\033[1;37m' + ' '+str(ord(data[1])).center(5) + str(len(data)).center(5))
 		if len(datos)>96:
 			datos=''
 		if len(datos)==96:
@@ -222,11 +222,11 @@ def handle_data(data):
 						esclavo[secadora].version=version
 						esclavo[secadora].tiemporespuesta=esclavo[secadora].ultimarespuesta-esclavo[secadora].ultimallamada
 						listaok.append(secadora)
-						datosrespuestas.append('\0\033[1;34m' + str(datetime.datetime.now())+ '\0\033[1;37m' + esclavo[secadora].nombre.center(7) + temp1.center(7) + temp2.center(7) + display)
+						datosrespuestas.append('\0\033[1;34m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+ '\0\033[1;37m' + esclavo[secadora].nombre.center(7) + temp1.center(7) + temp2.center(7) + display)
 						almacenar(str(secadora),temp1,temp2,formula,display,entrada1,entrada2,version)
 													
 			except:
-				datosrespuestas.append(str(datetime.datetime.now())+' ErrorRecepcion')
+				datosrespuestas.append(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+' ErrorRecepcion')
 				
 			datos=''
 
@@ -239,7 +239,6 @@ def refresco_pantalla():
 		maxlista=height - totalesclavos -1
 		if maxlista > 1:
 			escribir (totalesclavos + 1, '-'*(width-1))
-			time.sleep(0.1)
 			while len(datosrespuestas) > maxlista:
 				datosrespuestas.pop(0)	
 			while len(respuestas) > maxlista:
@@ -251,8 +250,11 @@ def refresco_pantalla():
 			i=1
 			for x in datosrespuestas:
 				i=i+1
-				if width > 23:
-					escribir(i + totalesclavos,x[:width-23],39)				
+				if width > 60:
+					if len(x) - 16 > width - 32:
+						escribir(i + totalesclavos,x[:width - 16],32)
+					else:
+						escribir(i + totalesclavos,x + (width - 32 - (len(x)-16)) * ' ',32)				
 		for i in esclavo:
 			ahora=datetime.datetime.now()
 			if int((ahora - esclavo[i].ultimarespuesta).seconds) < alertaverde:
@@ -268,8 +270,8 @@ def refresco_pantalla():
 def splashscreen():
 	width,height=terminalsize.get_terminal_size()
 	os.system('img2txt --width='+ str(width) + ' --height=' + str(height - 2) + ' dryermon.jpg')
-	datosrespuestas.append('\0\033[1;32m' + str(datetime.datetime.now())+ '\0\033[1;37m' + ' * Creado por emmanuel156@gmail.com *')
-	datosrespuestas.append('\0\033[1;32m' + str(datetime.datetime.now())+ '\0\033[1;37m' + ' * Proyectos de automatizacion H&H *')	
+	datosrespuestas.append('\0\033[1;32m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+ '\0\033[1;31m' + ' * Creado por emmanuel156@gmail.com *')
+	datosrespuestas.append('\0\033[1;32m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+ '\0\033[1;31m' + ' * Proyectos de automatizacion H&H *')	
 	time.sleep(5)		
 
 def escribir_en_puertos(cadena):
@@ -335,7 +337,7 @@ for i in range(0,10):
 		sPuerto=getsetting('ports','port'+str(i),'')
 		if len(sPuerto):
 			puertos[i]=serial.Serial(sPuerto, 9600, timeout=0.1)
-			datosrespuestas.append(str(datetime.datetime.now()) + ' * ' + sPuerto + ' *')
+			datosrespuestas.append('\0\033[1;32m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + '\0\033[1;33m' + ' * ' + sPuerto + ' *')
 			
 	except:
 		time.sleep(1)
@@ -352,7 +354,7 @@ while True:
 	if (ahora - alivedb).seconds > 3600:
 		dbping()
 	if len(lista)==0:
-		respuestas.append('\0\033[1;35m' + str(datetime.datetime.now())+ '\0\033[1;37m' + ' ' + 10*'-')
+		respuestas.append('\0\033[1;35m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+ '\0\033[1;37m' + ' ' + 10*'-')
 		if len(listaok)>0:
 			while len(listaok)>0:
 				i=listaok.pop()	
@@ -378,7 +380,7 @@ while True:
 
 	datos=''
 	i=lista.pop()
-	respuestas.append('\0\033[1;34m' + str(datetime.datetime.now())+ '\0\033[1;37m' + ' '+str(i).center(10))
+	respuestas.append('\0\033[1;34m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+ '\0\033[1;37m' + ' '+str(i).center(10))
 	esclavollamada=i
 	esclavo[i].ultimallamada=datetime.datetime.now()
 	escribir_en_puertos(chr(5)+chr(i)+chr(lo(crc16(chr(5)+chr(i))))+chr(hi(crc16(chr(5)+chr(i)))))
