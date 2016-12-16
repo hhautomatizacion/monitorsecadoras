@@ -4,6 +4,7 @@ import serial
 import time
 import datetime
 import sys
+import terminalsize
 import MySQLdb
 import ConfigParser
 import string
@@ -63,19 +64,6 @@ def dbping():
 	except MySQLdb.Error:
 		datosrespuestas.append(str(datetime.datetime.now())+' MySQL error')
 
-def obtenerancho():
-	scralto=0
-	scrancho=0
-	(scralto,scrancho)=os.popen('stty size','r').read().split()
-	return scrancho
-
-def obteneralto():
-	scralto=0
-	scrancho=0
-	(scralto,scrancho)=os.popen('stty size','r').read().split()
-	return scralto
-
-
 def almacenar(secadora,temp1,temp2,formula,display,entrada1,entrada2,version):
 	global cursor
 	global db
@@ -94,7 +82,7 @@ def interpolar(x,x1=268,x2=293,y1=88,y2=110):
 
 def borrar(secadora):
 	global esclavo
-	width=int(obtenerancho())
+	width,height=terminalsize.get_terminal_size()
 	sys.stdout.write('\0\033[' + str(esclavo[secadora].renglon) + ';1H')
 	sys.stdout.write('\0\033[1;31m')
 	printw(esclavo[secadora].nombre)
@@ -108,7 +96,7 @@ def escribir(renglon, texto, columna=1):
 
 def imprimir(secadora,color='blanco'):
 	global esclavo
-	width=int(obtenerancho())
+	width,height=terminalsize.get_terminal_size()
 	if width >87:
 		sys.stdout.write('\0\033[' + str(esclavo[secadora].renglon) + ';1H')
 		if color=='blanco':
@@ -247,8 +235,7 @@ def refresco_pantalla():
 	global totalesclavos
 	r=''
 	while True:
-		width=int(obtenerancho())
-		height=int(obteneralto())
+		width,height=terminalsize.get_terminal_size()
 		maxlista=height - totalesclavos -1
 		if maxlista > 1:
 			escribir (totalesclavos + 1, '-'*(width-1))
@@ -279,9 +266,8 @@ def refresco_pantalla():
 				borrar(i)
 
 def splashscreen():
-	width=int(obtenerancho())
-	height=int(obteneralto()) - 2
-	os.system('img2txt --width='+ str(width) + ' --height=' + str(height) + ' dryermon.jpg')
+	width,height=terminalsize.get_terminal_size()
+	os.system('img2txt --width='+ str(width) + ' --height=' + str(height - 2) + ' dryermon.jpg')
 	datosrespuestas.append('\0\033[1;32m' + str(datetime.datetime.now())+ '\0\033[1;37m' + ' * Creado por emmanuel156@gmail.com *')
 	datosrespuestas.append('\0\033[1;32m' + str(datetime.datetime.now())+ '\0\033[1;37m' + ' * Proyectos de automatizacion H&H *')	
 	time.sleep(5)		
