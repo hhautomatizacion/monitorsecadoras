@@ -46,7 +46,7 @@ def conectar():
 	cursor.execute('SELECT * FROM esclavos WHERE habilitado=1 ORDER BY nombre')
 	rows=cursor.fetchall()
 	esclavo={}
-	ahora=datetime.datetime.now() - datetime.timedelta(seconds=(alertaroja * 0.75))
+	ahora=datetime.datetime.now() - datetime.timedelta(seconds=alertaamarilla)
 	alivedb=datetime.datetime.now()
 	iter=0
 	for row in rows:
@@ -77,6 +77,24 @@ def almacenar(secadora,temp1,temp2,formula,display,entrada1,entrada2,version):
 	finally:
 		alivedb=datetime.datetime.now()
 
+def formatominseg(t):
+	try:
+		horas,resto = divmod(t.total_seconds(),3600)
+		minutos,segundos = divmod(resto,60)
+	except:
+		minutos=0
+		segundos=0
+	return str(int(minutos)) + ':' + str(int(segundos)).zfill(2)
+
+def formatoseg(t):
+	try:
+		segundos = t.total_seconds()
+		if segundos > 60:
+			return '-'
+	except:
+		segundos = 0.0
+	return '{:5,.2f}'.format(segundos)
+
 def interpolar(x,x1=268,x2=293,y1=88,y2=110):
 	return trunc(float(float(x)-float(x1))*float((float(y2)-float(y1))/(float(x2)-float(x1))))+float(y1)
 
@@ -97,7 +115,7 @@ def escribir(renglon, texto, columna=1):
 def imprimir(secadora,color='blanco'):
 	global esclavo
 	width,height=terminalsize.get_terminal_size()
-	if width >87:
+	if width >67:
 		sys.stdout.write('\0\033[' + str(esclavo[secadora].renglon) + ';1H')
 		if color=='blanco':
 			sys.stdout.write('\0\033[1;37m')
@@ -111,10 +129,10 @@ def imprimir(secadora,color='blanco'):
 		printw(esclavo[secadora].entrada1,3)
 		printw(esclavo[secadora].entrada2,3)
 		printw(esclavo[secadora].formula)
-		printw(esclavo[secadora].display,width-87)
+		printw(esclavo[secadora].display,width-67)
 		printw(str(esclavo[secadora].version))
-		printw(str(esclavo[secadora].tiemporespuesta),17)
-		printw(str(esclavo[secadora].tiemporespuestas),17)
+		printw(formatoseg(esclavo[secadora].tiemporespuesta),7)
+		printw(formatominseg(esclavo[secadora].tiemporespuestas),7)
 
 def printw(str, width=7):
 	sys.stdout.write('\0\033[?25l')
@@ -222,11 +240,11 @@ def handle_data(data):
 						esclavo[secadora].version=version
 						esclavo[secadora].tiemporespuesta=esclavo[secadora].ultimarespuesta-esclavo[secadora].ultimallamada
 						listaok.append(secadora)
-						datosrespuestas.append('\0\033[1;34m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+ '\0\033[1;37m' + esclavo[secadora].nombre.center(7) + temp1.center(7) + temp2.center(7) + display)
+						datosrespuestas.append('\0\033[1;34m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+ '\0\033[1;37m' + esclavo[secadora].nombre.center(7) + temp1.center(7) + temp2.center(7) + entrada1.center(3) + entrada2.center(3) + display + version.center(7) + formatoseg(esclavo[secadora].tiemporespuesta).center(7) + formatominseg(esclavo[secadora].tiemporespuestas).center(7))
 						almacenar(str(secadora),temp1,temp2,formula,display,entrada1,entrada2,version)
 													
 			except:
-				datosrespuestas.append(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+' ErrorRecepcion')
+				datosrespuestas.append('\0\033[1;31m' + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + '\0\033[1;34m' + ' ErrorRecepcion')
 				
 			datos=''
 
