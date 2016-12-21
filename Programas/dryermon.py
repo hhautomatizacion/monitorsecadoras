@@ -40,13 +40,15 @@ def conectar():
 	global esclavo
 	global alivedb
 	global sServidor
+	global sUsuario
+	global sPassword
 	global totalesclavos
-	db = MySQLdb.connect(sServidor,'root','manttocl','dryermon')
+	db = MySQLdb.connect(sServidor,sUsuario,sPassword,'dryermon')
 	cursor = db.cursor()
 	cursor.execute('SELECT * FROM esclavos WHERE habilitado=1 ORDER BY nombre')
 	rows=cursor.fetchall()
 	esclavo={}
-	ahora=datetime.datetime.now() - datetime.timedelta(seconds=alertaamarilla)
+	ahora=datetime.datetime.now() - datetime.timedelta(seconds=alertaroja)
 	alivedb=datetime.datetime.now()
 	iter=0
 	for row in rows:
@@ -311,6 +313,12 @@ def getsetting(sSeccion,sClave,sDefault=''):
 	try:
 		sSetting=cfg.get(sSeccion,sClave)
 	except:
+		if not cfg.has_section(sSeccion):
+			cfg.add_section(sSeccion)
+		if not cfg.has_option(sSeccion,sClave):
+			cfg.set(sSeccion,sClave,sDefault)
+		with open('dryermon.ini', 'w') as configfile:
+			cfg.write(configfile)		
 		sSetting=sDefault
 	return sSetting
 
@@ -319,8 +327,6 @@ esclavo={}
 puertos={}
 
 
-car=0
-cnt=[]
 i=0
 datos=''
 esclavollamada=0
@@ -334,12 +340,9 @@ listabad=[]
 
 splashscreen()
 
-
-for car in range(0,256):
-	cnt.append(car)
-	cnt[car]=0
-
 sServidor=getsetting('database','server','localhost')
+sUsuario=getsetting('database','user','manttocl')
+sPassword=getsetting('database','password','')
 alertaverde=int(getsetting('time','green','3'))
 alertaamarilla=int(getsetting('time','yellow','20'))
 alertaroja=int(getsetting('time','red','90'))
@@ -347,8 +350,6 @@ pausalistaok=float(getsetting('pause','ok','0.2'))
 pausalistabad=float(getsetting('pause','bad','0.2'))
 pausallamadas=float(getsetting('pause','call','0.5'))
 
-
-conectar()
 i=0
 for i in range(0,10):
 	try:
@@ -359,6 +360,8 @@ for i in range(0,10):
 			
 	except:
 		time.sleep(1)
+
+conectar()
 
 thread = threading.Thread(target=read_from_port)
 thread.start()
