@@ -68,8 +68,6 @@
 ---
 ![DSC02228.JPG](/Fotos/DSC02228.JPG)
 ---
-![DSC02229.JPG](/Fotos/DSC02229.JPG)
----
 ![DSC02230.JPG](/Fotos/DSC02230.JPG)
 ---
 ![DSC02231.JPG](/Fotos/DSC02231.JPG)
@@ -100,8 +98,6 @@
 ---
 ![DSC02396.JPG](/Fotos/DSC02396.JPG)
 ---
-![DSC02399.JPG](/Fotos/DSC02399.JPG)
----
 ![DSC02400.JPG](/Fotos/DSC02400.JPG)
 ---
 ![DSC02401.JPG](/Fotos/DSC02401.JPG)
@@ -109,16 +105,6 @@
 ![DSC02402.JPG](/Fotos/DSC02402.JPG)
 ---
 ![DSC02403.JPG](/Fotos/DSC02403.JPG)
----
-![MOV02241.jpg](/Fotos/MOV02241.jpg)
----
-![MOV02242.jpg](/Fotos/MOV02242.jpg)
----
-![MOV02390.jpg](/Fotos/MOV02390.jpg)
----
-![MOV02397.jpg](/Fotos/MOV02397.jpg)
----
-![MOV02398.jpg](/Fotos/MOV02398.jpg)
 ---
 ![dryermon.jpg](/Programas/dryermon.jpg)
 ---

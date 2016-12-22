@@ -5,10 +5,11 @@ import terminalsize
 import ConfigParser
 
 class slave:
-        def __init__(self,numero,nombre,entrada1):
+        def __init__(self,numero,nombre,entrada1,estado):
                 self.numero=numero
                 self.nombre=nombre
                 self.entrada1=entrada1
+                self.estado=estado
 
 def conectar():
         global cursor
@@ -24,7 +25,7 @@ def conectar():
         rows=cursor.fetchall()
         esclavo={}
         for row in rows:
-                esclavo[row[0]]=slave(int(row[0]),row[1],0)
+                esclavo[row[0]]=slave(int(row[0]),str(row[1]),0,'')
 
 
 def getsetting(sSeccion,sClave,sDefault=''):
@@ -49,28 +50,39 @@ sUsuario=getsetting('database','user','manttocl')
 sPassword=getsetting('database','password','')
 
 conectar()
-ahora=datetime.datetime.now()
 
 width,height=terminalsize.get_terminal_size()
-minutos=width-10
-
-sys.stdout.write( "*".center(7)+'|')
-for i in range (minutos,0,-10):
-	sys.stdout.write('|'+str(ahora - datetime.timedelta(minutes=i))[11:16].center(9))
-ahora=datetime.datetime.now()
-sys.stdout.write('\n')
+intervalo=60
 
 cursor = db.cursor()
+
+cursor.execute('SELECT (TO_SECONDS(DATE_SUB(NOW(), INTERVAL ' + str(intervalo * (width - 7)) + ' SECOND )) DIV ' + str(intervalo) + '),DATE_SUB(NOW(), INTERVAL ' + str(intervalo * (width - 7)) + ' SECOND )')
+rows=cursor.fetchall()
+for row in rows:
+        inicio=int(row[0])
+        iniciostr=str(row[1])
 for e in esclavo:
-	sys.stdout.write(str(e).center(7)+'|')
-	for i in range (minutos,-1,-1):
-		cursor.execute("SELECT entrada1 FROM lecturas WHERE secadora=" + str(e) +  " AND fecha >= DATE_SUB(NOW(),INTERVAL "+ str(i+1) +  " MINUTE) AND fecha < DATE_SUB(NOW(),INTERVAL " + str(i) + " MINUTE) LIMIT 1")
-		rows=cursor.fetchall()
-		if len(rows) == 0:
-			sys.stdout.write(' ')
-		for row in rows:
-			if row[0]==0:
-				sys.stdout.write('0')
-			else:
-				sys.stdout.write('1')
+        esclavo[e].estado=' ' * (width - 6)
+
+etiquetas=['|---------']* int((width - 7) / 10)
+
+cursor.execute('SELECT (TO_SECONDS(fecha) DIV ' + str(intervalo) + ') AS i,secadora, TIME(fecha), entrada1 FROM lecturas WHERE fecha>"'+ iniciostr +'" GROUP BY secadora, (TO_SECONDS(fecha) DIV ' + str(intervalo) + ')')
+rows=cursor.fetchall()
+for row in rows:
+        pos=int(row[0]) - inicio - 1
+        if (pos % 10 == 0) and ( int(pos / 10) < len(etiquetas)) :
+            
+                etiquetas[int(pos / 10)]='|' + str(row[2])[:5].center(9)
+        if pos >= 0:
+                esclavo[int(row[1])].estado =  esclavo[int(row[1])].estado[:pos] + esclavo[int(row[1])].estado[pos:].replace(' ', str(row[3]),1)
+
+sys.stdout.write( "*".center(4)+'|') 
+
+for i in etiquetas:
+        sys.stdout.write(i)
+        
+sys.stdout.write('\n')
+for e in esclavo:
+	sys.stdout.write(esclavo[e].nombre.center(4)+'|')
+	sys.stdout.write(esclavo[e].estado)
 	sys.stdout.write('\n')
