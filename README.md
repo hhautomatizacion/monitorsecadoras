@@ -106,5 +106,9 @@
 ---
 ![DSC02403.JPG](/Fotos/DSC02403.JPG)
 ---
+![Screenshot at 2017-02-19 08-48-44.png](/Fotos/Screenshot at 2017-02-19 08-48-44.png)
+---
+![opta-ans.gif](/Historial/opta-ans.gif)
+---
 ![dryermon.jpg](/Programas/dryermon.jpg)
 ---

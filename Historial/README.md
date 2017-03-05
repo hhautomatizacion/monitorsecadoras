@@ -13,3 +13,7 @@
 * Manuales de usuario de componentes
 
 * Documentacion de funciones, herramientas
+
+---
+![opta-ans.gif](/Historial/opta-ans.gif)
+---
