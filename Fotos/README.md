@@ -13,7 +13,7 @@
 * Capturas de pantalla
 
 ---
-![2014-04-02 16.05.15.jpg](/Fotos/2014-04-02 16.05.15.jpg)
+![2014-04-02 16.05.15.jpg](/Fotos/2014-04-02%2016.05.15.jpg)
 ---
 ![2016-07-29-123959_1360x768_scrot.png](/Fotos/2016-07-29-123959_1360x768_scrot.png)
 ---
@@ -61,5 +61,5 @@
 ---
 ![DSC02403.JPG](/Fotos/DSC02403.JPG)
 ---
-![Screenshot at 2017-02-19 08-48-44.png](/Fotos/Screenshot at 2017-02-19 08-48-44.png)
+![Screenshot at 2017-02-19 08-48-44.png](/Fotos/Screenshot%20at%202017-02-19%2008-48-44.png)
 ---
