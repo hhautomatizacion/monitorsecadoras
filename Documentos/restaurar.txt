@@ -1,0 +1,3 @@
+ echo "create database kanboard;" | mysql -uroot -p
+
+pv database1.sql.gz | gunzip | mysql -u root -p database1

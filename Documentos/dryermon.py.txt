@@ -1,6 +1,18 @@
-Instalar 
-python-serial
-python-mysqldb
-setserial
+apt-get update
 
-agregar usuario a grupo dialout
+img2txt
+
+apt-get install python-serial
+apt-get install python-mysqldb
+apt-get install setserial
+
+#agregar usuario a grupo dialout
+sudo usermod -a -G dialout mantenimientocl
+
+
+#disable autoopen nautilus on pendrive connect
+gsettings set org.gnome.desktop.media-handling automount-open false
+
+
+#disable screensaver 
+gsettings get org.gnome.settings-daemon.plugins.power idle-dim
