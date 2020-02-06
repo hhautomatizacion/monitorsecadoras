@@ -20,8 +20,8 @@
 * Tarjetas H&H para secadora challenge
 
 ## Autores
-* <a href="http://www.github.com/emmanuel156">emmanuel156</a> <img src="https://avatars0.githubusercontent.com/u/15036095?v=3" height="32" width="32">
-* <a href="http://www.github.com/pedrohermon">pedrohermon</a> <img src="https://avatars0.githubusercontent.com/u/15159556?v=3" height="32" width="32">
+* <a href="http://www.github.com/emmanuel156">emmanuel156</a> <img src="https://avatars3.githubusercontent.com/u/15036095?v=4" height="32" width="32">
+* <a href="http://www.github.com/pedrohermon">pedrohermon</a> <img src="https://avatars3.githubusercontent.com/u/15159556?v=4" height="32" width="32">
 
 ## Comentarios
 * Ninguno
