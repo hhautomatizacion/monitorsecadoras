@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "generated_at": "2026-01-31T05:10:46.688046",
+  "slaves": [
+    {
+      "esclavo": 1,
+      "nombre": "E01",
+      "descripcion": "Sensor secador 1",
+      "version": 1,
+      "x1": 0,
+      "x2": 100,
+      "y1": 0,
+      "y2": 100,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 2,
+      "nombre": "E02",
+      "descripcion": "Secadora 2",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 3,
+      "nombre": "E03",
+      "descripcion": "Secadora 3",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 4,
+      "nombre": "E04",
+      "descripcion": "Secadora 4",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 0
+    },
+    {
+      "esclavo": 5,
+      "nombre": "E05",
+      "descripcion": "Secadora 5",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 0
+    },
+    {
+      "esclavo": 6,
+      "nombre": "E06",
+      "descripcion": "Secadora 6",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 7,
+      "nombre": "E07",
+      "descripcion": "Secadora 7",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 8,
+      "nombre": "E08",
+      "descripcion": "Secadora 8",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 9,
+      "nombre": "E09",
+      "descripcion": "Secadora 9",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 10,
+      "nombre": "E10",
+      "descripcion": "Secadora 10",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 11,
+      "nombre": "E11",
+      "descripcion": "Secadora 11",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 12,
+      "nombre": "E12",
+      "descripcion": "Secadora 12",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    },
+    {
+      "esclavo": 14,
+      "nombre": "E14",
+      "descripcion": "Secadora 14",
+      "version": 1,
+      "x1": 0,
+      "x2": 1,
+      "y1": 0,
+      "y2": 1,
+      "temp1": 1,
+      "temp2": 1
+    }
+  ]
+}

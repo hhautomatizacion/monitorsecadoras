@@ -1,3 +1,14 @@
+
+sudo apt install python3-pymysql
+sudo apt install python3-serial
+
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+
+# bind-address = 127.0.0.1
+
+
+### BORRAR 
+
 apt-get update
 
 img2txt
@@ -16,3 +27,6 @@ gsettings set org.gnome.desktop.media-handling automount-open false
 
 #disable screensaver 
 gsettings get org.gnome.settings-daemon.plugins.power idle-dim
+
+
+

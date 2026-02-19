@@ -17,9 +17,9 @@ def conectar():
         global esclavo
         global alivedb
         global sServidor
-	global sUsuario 
-	global sPassword
-        db = MySQLdb.connect(sServidor,sUsuario,sPassword,'dryermon')
+        global sUsuario 
+        global sPassword
+        db = MySQLdb.connect(sServidor, sUsuario, sPassword, 'dryermon')
         cursor = db.cursor()
         cursor.execute('SELECT esclavo,nombre FROM esclavos WHERE habilitado=1 ORDER BY nombre')
         rows=cursor.fetchall()
