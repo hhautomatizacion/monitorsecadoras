@@ -15,5 +15,4 @@
 * Documentacion de funciones, herramientas
 
 ---
-![opta-ans.gif](/Historial/opta-ans.gif)
----
+![opta-ans.gif](opta-ans.gif)

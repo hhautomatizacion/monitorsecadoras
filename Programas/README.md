@@ -15,7 +15,3 @@
 * Archivos de configuracion de los programas.
 
 * Programas compilados.
-
----
-![dryermon.jpg](/Programas/dryermon.jpg)
----
